@@ -9,8 +9,8 @@ pipeline = MemoryIngestPipeline()
 
 
 @router.post("", response_model=IngestResponse)
-def ingest_memory(request: IngestRequest):
-    pipeline.ingest(
+async def ingest_memory(request: IngestRequest):
+    await pipeline.ingest(
         text=request.text,
         source=request.source,
         timestamp=request.timestamp,

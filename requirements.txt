@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+google-generativeai
+pydantic-settings
+python-dotenv
+passlib
+bcrypt
+python-multipart

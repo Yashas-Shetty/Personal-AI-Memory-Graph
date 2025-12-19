@@ -11,6 +11,10 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 
+from app.api.ingest import router as ingest_router
+from app.api.query import router as query_router
+from app.api.memory import router as memory_router
+
 from app.core.config import settings
 from app.core.logging import logger
 from app.core.constants import APP_VERSION, APP_DESCRIPTION
@@ -65,6 +69,9 @@ def create_application() -> FastAPI:
     # Routes
     # -------------------------
     app.include_router(health.router, tags=["Health"])
+    app.include_router(ingest_router)
+    app.include_router(query_router)
+    app.include_router(memory_router)
 
     logger.info(f"Application '{settings.APP_NAME}' initialized")
 

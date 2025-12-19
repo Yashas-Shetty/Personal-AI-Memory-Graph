@@ -6,7 +6,7 @@ and application settings.
 """
 
 from pydantic_settings import BaseSettings
-from typing import Optional
+from typing import List
 
 
 class Settings(BaseSettings):
@@ -19,6 +19,7 @@ class Settings(BaseSettings):
         DEBUG: Debug mode flag
         HOST: Server host address
         PORT: Server port number
+        CORS_ORIGINS: Allowed CORS origins
     """
     
     APP_NAME: str = "personal-ai-memory-graph"
@@ -26,6 +27,16 @@ class Settings(BaseSettings):
     DEBUG: bool = True
     HOST: str = "0.0.0.0"
     PORT: int = 8000
+    
+    # LLM Configuration
+    GEMINI_API_KEY: str = ""
+
+    # CORS configuration
+    CORS_ORIGINS: List[str] = [
+        "http://localhost:3000",
+        "http://localhost:5173",
+        "http://127.0.0.1:3000",
+    ]
     
     class Config:
         """Pydantic configuration."""
