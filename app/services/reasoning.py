@@ -4,6 +4,7 @@ Reasoning service that combines vector, graph, and LLM logic.
 
 from app.memory.retrieve_pipeline import RetrievePipeline
 from app.llm.client import GeminiClient
+from app.llm.prompts import REASONING_PROMPT
 
 class ReasoningService:
     """
@@ -20,5 +21,17 @@ class ReasoningService:
         # 1. Retrieve context
         context = await self.retriever.retrieve(user_query)
         
-        # 2. Reason over context
+        if not context:
+            context = "No relevant memories found."
+
+        # 2. Construct prompt
+        prompt = REASONING_PROMPT.format(context=context, query=user_query)
+
+        # 3. Generate response
+        try:
+            response = await self.llm.generate_text(prompt)
+            return response
+        except Exception as e:
+            return f"Error generating reasoning: {e}"
+        
         return "Reasoned Response based on context"

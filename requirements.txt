@@ -6,3 +6,6 @@ python-dotenv
 passlib
 bcrypt
 python-multipart
+chromadb
+fastembed
+neo4j

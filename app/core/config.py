@@ -6,7 +6,7 @@ and application settings.
 """
 
 from pydantic_settings import BaseSettings
-from typing import List
+from typing import List, Optional
 
 
 class Settings(BaseSettings):
@@ -28,8 +28,16 @@ class Settings(BaseSettings):
     HOST: str = "0.0.0.0"
     PORT: int = 8000
     
-    # LLM Configuration
-    GEMINI_API_KEY: str = ""
+    # Gemini Settings
+    GEMINI_API_KEY: Optional[str] = None
+    
+    # Neo4j Settings
+    NEO4J_URI: str = "bolt://localhost:7687"
+    NEO4J_USER: str = "neo4j"
+    NEO4J_PASSWORD: str = "password"
+    
+    # Chroma Settings
+    CHROMA_PERSIST_DIRECTORY: str = "./data/chroma"
 
     # CORS configuration
     CORS_ORIGINS: List[str] = [

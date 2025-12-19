@@ -37,6 +37,14 @@ async def lifespan(app: FastAPI):
 
     # Shutdown logic goes here
     logger.info("🛑 Personal AI Memory Graph shutting down...")
+    
+    # Close Graph connection if it exists
+    from app.memory.graph.client import GraphClient
+    # This is a bit hacky as we don't have a singleton, but good for structural demo
+    try:
+        GraphClient().close()
+    except:
+        pass
 
 
 def create_application() -> FastAPI:
@@ -68,6 +76,14 @@ def create_application() -> FastAPI:
     # -------------------------
     # Routes
     # -------------------------
+    @app.get("/", tags=["Root"])
+    async def root():
+        return {
+            "message": "Welcome to the Personal AI Memory Graph API",
+            "docs": "/docs",
+            "health": "/health"
+        }
+
     app.include_router(health.router, tags=["Health"])
     app.include_router(ingest_router)
     app.include_router(query_router)

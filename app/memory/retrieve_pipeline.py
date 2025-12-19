@@ -7,7 +7,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 from app.memory.vector.search import semantic_search
-from app.memory.graph.query import build_entity_query
+from app.memory.graph.query import get_graph_context
 
 class RetrievePipeline:
     """
@@ -25,7 +25,14 @@ class RetrievePipeline:
         # 1. Semantic search in vector store
         vector_results = await semantic_search(query)
         
-        # 2. Relationship lookup in graph (simplified)
-        # graph_results = await some_graph_lookup(query)
+        # 2. Relationship lookup in graph
+        # For each document found, we can look up entities if they were stored in metadata
+        # Or we can just look up entities mentioned in the query (advanced)
+        # For now, let's just collect the facts found in the vector search.
         
-        return vector_results
+        context_parts = []
+        for res in vector_results:
+            context_parts.append(f"Memory: {res['content']}")
+        
+        # 3. Aggregate all context
+        return "\n".join(context_parts)

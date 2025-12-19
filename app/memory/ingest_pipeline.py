@@ -23,15 +23,17 @@ class MemoryIngestPipeline:
         """
         logger.info("Starting memory ingestion pipeline")
 
-        # 1. Extract Intelligence (Entities & Relationships)
+        # 1. Summarize if text is long
+        from app.llm.summarize import summarize_memory
+        summary = await summarize_memory(text)
+
+        # 2. Extract Intelligence (Entities & Relationships)
         extraction_result = await extract_from_text(text)
         
-        # 2. Prepare Payload
-        payload = self._prepare_payload(text, source, timestamp, extraction_result)
+        # 3. Prepare Payload
+        payload = self._prepare_payload(text, summary, source, timestamp, extraction_result)
 
-        # 3. Store Data
-        # Note: Stores are currently synchronous stubs. 
-        # In a real async DB scenario, these would also be awaited.
+        # 4. Store Data
         self.vector_store.store_memory(payload)
         
         if extraction_result.entities:
@@ -41,7 +43,7 @@ class MemoryIngestPipeline:
 
         logger.info("Memory ingestion pipeline completed")
 
-    def _prepare_payload(self, text: str, source: str, timestamp: datetime, extraction_result) -> dict:
+    def _prepare_payload(self, text: str, summary: str, source: str, timestamp: datetime, extraction_result) -> dict:
         """
         Normalize and prepare memory payload.
         """
@@ -49,6 +51,7 @@ class MemoryIngestPipeline:
 
         return {
             "text": text.strip(),
+            "summary": summary,
             "source": source,
             "timestamp": timestamp.isoformat(),
             "extraction": extraction_result.dict(),

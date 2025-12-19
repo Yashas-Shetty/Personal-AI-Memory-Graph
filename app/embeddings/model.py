@@ -2,15 +2,21 @@
 Embedding model loading logic.
 """
 
+from fastembed import TextEmbedding
+from typing import List
+
 class EmbeddingModel:
     """
-    Loads and provides embeddings using SentenceTransformers or similar.
+    Provides local embeddings using fastembed.
+    Default model: BAAI/bge-small-en-v1.5
     """
-    def __init__(self):
-        pass
+    def __init__(self, model_name: str = "BAAI/bge-small-en-v1.5"):
+        self.model = TextEmbedding(model_name=model_name)
 
-    def encode(self, text: str):
+    def encode(self, text: str) -> List[float]:
         """
         Convert text to vector.
         """
-        return [0.0] * 384
+        # fastembed returns a generator of numpy arrays
+        embeddings = list(self.model.embed([text]))
+        return embeddings[0].tolist()
