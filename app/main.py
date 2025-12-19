@@ -1,33 +1,85 @@
+"""
+Main entry point for the Personal AI Memory Graph system.
+
+This module initializes the FastAPI application,
+registers middleware, and attaches core routes.
+"""
+
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
-from pydantic import BaseModel
+from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
-import os
 
-app = FastAPI()
+from app.core.config import settings
+from app.core.logging import logger
+from app.core.constants import APP_VERSION, APP_DESCRIPTION
+from app.api import health
 
-class Item(BaseModel):
-    name: str
-    price: float
 
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """
+    Application lifespan handler.
 
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: str = None):
-    return {"item_id": item_id, "q": q}
+    Used for startup and shutdown events.
+    """
+    logger.info("🚀 Personal AI Memory Graph starting up...")
+    logger.info(f"Environment: {settings.ENV}")
+    logger.info(f"Debug mode: {settings.DEBUG}")
 
-@app.post("/items/")
-def create_item(item: Item):
-    return item
+    # Startup logic goes here (later: DB connections, memory engines)
+    yield
+
+    # Shutdown logic goes here
+    logger.info("🛑 Personal AI Memory Graph shutting down...")
+
+
+def create_application() -> FastAPI:
+    """
+    Create and configure the FastAPI application.
+
+    Returns:
+        FastAPI: Configured FastAPI application instance
+    """
+    app = FastAPI(
+        title=settings.APP_NAME,
+        description=APP_DESCRIPTION,
+        version=APP_VERSION,
+        debug=settings.DEBUG,
+        lifespan=lifespan
+    )
+
+    # -------------------------
+    # Middleware
+    # -------------------------
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=settings.CORS_ORIGINS,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+
+    # -------------------------
+    # Routes
+    # -------------------------
+    app.include_router(health.router, tags=["Health"])
+
+    logger.info(f"Application '{settings.APP_NAME}' initialized")
+
+    return app
+
+
+# Create the application instance
+app = create_application()
+
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
-    app = FastAPI()
-
-    @app.get("/")
-    def read_root():
-        return {"Hello": "World"}
-
-    if __name__ == "__main__":
-        uvicorn.run(app, host="0.0.0.0", port=8000)
+    logger.info(f"Starting server on {settings.HOST}:{settings.PORT}")
+    uvicorn.run(
+        "app.main:app",
+        host=settings.HOST,
+        port=settings.PORT,
+        reload=settings.DEBUG
+    )
