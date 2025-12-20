@@ -1,4 +1,5 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+console.log('Frontend API URL:', API_URL);
 
 export interface MemoryStats {
   vector_count: number;
@@ -22,7 +23,7 @@ export const api = {
     return res.json();
   },
 
-  async ingest(text: str, source: string = 'web_ui'): Promise<IngestResponse> {
+  async ingest(text: string, source: string = 'web_ui'): Promise<IngestResponse> {
     const res = await fetch(`${API_URL}/ingest`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
