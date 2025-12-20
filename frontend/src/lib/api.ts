@@ -1,4 +1,4 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
 console.log('Frontend API URL:', API_URL);
 
 export interface MemoryStats {
@@ -23,7 +23,7 @@ export const api = {
     return res.json();
   },
 
-  async ingest(text: string, source: string = 'web_ui'): Promise<IngestResponse> {
+  async ingest(text: string, source: string = 'note'): Promise<IngestResponse> {
     const res = await fetch(`${API_URL}/ingest`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -43,5 +43,12 @@ export const api = {
   async reset(): Promise<any> {
     const res = await fetch(`${API_URL}/memory/clear`, { method: 'POST' });
     return res.json();
+  },
+
+  async listMemories(source?: string): Promise<any[]> {
+    const url = source ? `${API_URL}/memory/list?source=${source}` : `${API_URL}/memory/list`;
+    const res = await fetch(url);
+    const data = await res.json();
+    return data.memories || [];
   }
 };

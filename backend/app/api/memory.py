@@ -3,6 +3,7 @@ API endpoints for memory inspection and debugging.
 """
 
 from fastapi import APIRouter
+from app.core.logging import logger
 
 from app.memory.vector.client import VectorClient
 from app.memory.graph.client import GraphClient
@@ -17,17 +18,27 @@ async def get_memory_stats():
     vector_client = VectorClient()
     graph_client = GraphClient()
     
+    vector_count = 0
+    graph_count = 0
+    status = "online"
+    
     try:
         vector_count = vector_client.count()
-        graph_count = graph_client.count_nodes()
-        
-        return {
-            "vector_count": vector_count,
-            "graph_count": graph_count,
-            "status": "online"
-        }
     except Exception as e:
-        return {"error": str(e), "status": "partial_failure"}
+        logger.warning(f"Vector store not ready: {e}")
+        status = "partial_failure"
+
+    try:
+        graph_count = graph_client.count_nodes()
+    except Exception as e:
+        logger.warning(f"Graph store not connected (Neo4j): {e}")
+        status = "partial_failure" if status == "online" else "offline"
+        
+    return {
+        "vector_count": vector_count,
+        "graph_count": graph_count,
+        "status": status
+    }
 
 @router.post("/clear")
 async def clear_all_memory():
@@ -46,6 +57,19 @@ async def clear_all_memory():
         return {"message": "All memories cleared successfully."}
     except Exception as e:
         return {"error": str(e), "message": "Failed to clear some storage layers."}
+
+@router.get("/list")
+async def list_memories(source: str = None):
+    """
+    List stored memories, optionally filtered by source (note, task, idea, chat).
+    """
+    vector_client = VectorClient()
+    try:
+        memories = vector_client.list_memories(source=source)
+        return {"memories": memories}
+    except Exception as e:
+        logger.error(f"Failed to list memories: {e}")
+        return {"error": str(e), "memories": []}
 
 @router.get("/inspect")
 async def inspect_memory():

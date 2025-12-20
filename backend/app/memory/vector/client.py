@@ -34,3 +34,29 @@ class VectorClient:
         Reset the entire database.
         """
         self.client.reset()
+
+    def list_memories(self, source: str = None, limit: int = 50):
+        """
+        List memories, optionally filtered by source.
+        """
+        collection = self.get_collection("memories")
+        
+        where = {}
+        if source:
+            where = {"source": source}
+            
+        results = collection.get(
+            where=where,
+            limit=limit,
+            include=["documents", "metadatas", "ids"]
+        )
+        
+        memories = []
+        if results["documents"]:
+            for i in range(len(results["documents"])):
+                memories.append({
+                    "id": results["ids"][i],
+                    "content": results["documents"][i],
+                    "metadata": results["metadatas"][i]
+                })
+        return memories
