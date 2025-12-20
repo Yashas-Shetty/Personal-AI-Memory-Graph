@@ -1,9 +1,18 @@
-# Python virtual environment
+# Virtual Environments
 venv/
+backend/venv/
 
-# Python cache
+# Secrets
+backend/.env
+.env
+
+# Database/Data
+backend/data/
+
+# Cache
 __pycache__/
 *.pyc
+.pytest_cache/
 
-# Environment variables
-.env
+# System
+C:\Users\Shodhan Shetty\.gemini/
