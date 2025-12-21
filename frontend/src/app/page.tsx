@@ -94,7 +94,7 @@ export default function Home() {
             Ω
           </div>
           <div className="hidden md:block">
-            <h1 className="text-sm font-black tracking-[0.2em] text-white">ANTIGRAVITY</h1>
+            <h1 className="text-sm font-black tracking-[0.2em] text-white">SS PERSONAL</h1>
             <p className="text-[10px] text-[#475569] font-bold tracking-widest uppercase">Memory OS v1</p>
           </div>
         </div>
@@ -333,7 +333,7 @@ export default function Home() {
             </div>
 
             {/* Neural Input Dock */}
-            <div className="fixed bottom-16 left-1/2 -translate-x-1/2 w-full max-w-4xl px-12 z-40">
+            <div className="absolute bottom-16 left-1/2 -translate-x-1/2 w-full max-w-4xl px-12 z-40">
               <div className="bg-[#0f1115]/90 backdrop-blur-3xl p-4 rounded-[48px] border border-white/[0.08] shadow-[0_50px_100px_-20px_rgba(0,0,0,0.8)] flex items-center gap-6 group hover:border-white/[0.15] transition-all">
                 <input
                   value={chatInput}
