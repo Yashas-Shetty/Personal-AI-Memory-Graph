@@ -77,7 +77,10 @@ export default function Home() {
     try {
       const answer = await api.query(chatInput);
       setChatAnswer(answer);
-    } catch (err) { console.error(err); }
+    } catch (err: any) {
+      console.error(err);
+      setChatAnswer(`Error: ${err.message || 'Brain connection lost'}`);
+    }
     finally { setLoading(false); }
   };
 

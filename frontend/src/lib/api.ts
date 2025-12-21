@@ -37,7 +37,13 @@ export const api = {
       method: 'POST',
     });
     const data = await res.json();
-    return data; // ReasoningService returns simple string currently
+
+    // If FastAPI returns a validation error or 404, it's an object with a 'detail' key
+    if (data && typeof data === 'object' && data.detail) {
+      throw new Error(typeof data.detail === 'string' ? data.detail : JSON.stringify(data.detail));
+    }
+
+    return data; // Should be a string now
   },
 
   async reset(): Promise<any> {
